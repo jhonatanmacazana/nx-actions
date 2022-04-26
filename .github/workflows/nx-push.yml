@@ -62,7 +62,6 @@ jobs:
           main-branch-name: ${{ steps.variables.outputs.branch }}
 
       - name: Get variables (yarn cache directory, commit hash)
-        id: variables
         run: |
           npm i -g nx
 
