@@ -4,9 +4,9 @@ on:
   push:
     branches: [main, dev]
 
-concurrency:
-  group: push-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: push-${{ github.ref }}
+#   cancel-in-progress: true
 
 defaults:
   run:
@@ -63,7 +63,7 @@ jobs:
 
       - name: Check Nx Apps
         id: check-nx-apps
-        uses: ignition-is-go/action-nx-affected-apps
+        uses: dkhunt27/action-nx-affected-list@v3
         with:
           head: ${{ steps.nx-shas.outputs.head }}
           base: ${{ steps.nx-shas.outputs.base }}
