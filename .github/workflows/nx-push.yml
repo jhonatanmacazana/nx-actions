@@ -34,7 +34,7 @@ jobs:
         run: yarn install
         if: steps.setup-workspace.outputs.cache-hit != 'true'
 
-      # - name: Check Nx affected
-      #   uses: ./.github/actions/check-nx-affected
-      #   with:
-      #     branch: ${{ steps.setup-workspace.outputs.branch }}
+      - name: Check Nx affected
+        uses: ./.github/actions/check-nx-affected
+        with:
+          branch: ${{ steps.setup-workspace.outputs.branch }}
