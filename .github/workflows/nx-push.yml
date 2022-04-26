@@ -1,4 +1,4 @@
-name: PR workflow
+name: Push workflow
 
 on:
   push:
@@ -14,17 +14,10 @@ defaults:
 
 jobs:
   check:
-    name: Check front-end, back-end, qa changes
-
+    name: Check changes
     outputs:
       run_job: ${{ steps.check_files.outputs.run_job }}
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
