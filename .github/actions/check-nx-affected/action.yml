@@ -1,0 +1,48 @@
+name: 'Check Nx affected'
+description: 'Get list of apps and libs affected by NX, and the appropiate SHAs for nx affected'
+
+inputs:
+  branch:
+    description: 'Main branch name to get the appropiate SHAs'
+    required: true
+outputs:
+  head:
+    description: 'Nx Head'
+    value: ${{ steps.nx-shas.outputs.head }}
+  base:
+    description: 'Nx Base'
+    value: ${{ steps.nx-shas.outputs.base }}
+  affectedApps:
+    description: (Forwarded) Array of affected app names
+    value: ${{  steps.check-nx-affected.outputs.affectedApps }}
+  hasAffectedApps:
+    description: (Forwarded) true/false if there are affected apps
+    value: ${{  steps.check-nx-affected.outputs.hasAffectedApps }}
+  affectedLibs:
+    description: (Forwarded) Array of affected lib names
+    value: ${{  steps.check-nx-affected.outputs.affectedLibs }}
+  hasAffectedLibs:
+    description: (Forwarded) true/false if there are affected libs
+    value: ${{  steps.check-nx-affected.outputs.hasAffectedLibs }}
+  affected:
+    description: (Forwarded) Array of affected projects (apps/libs) names
+    value: ${{  steps.check-nx-affected.outputs.affected }}
+  hasAffected:
+    description: (Forwarded) true/false if there are affected projects (apps/libs)
+    value: ${{  steps.check-nx-affected.outputs.hasAffected }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Derive appropriate SHAs for base and head for `nx affected` commands
+      id: nx-shas
+      uses: nrwl/nx-set-shas@v2
+      with:
+        main-branch-name: ${{ input.branch }}
+
+    - name: Check Nx Affected
+      id: check-nx-affected
+      uses: dkhunt27/action-nx-affected-list@v3
+      with:
+        head: ${{ steps.nx-shas.outputs.head }}
+        base: ${{ steps.nx-shas.outputs.base }}

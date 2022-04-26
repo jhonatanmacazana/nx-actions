@@ -1,0 +1,46 @@
+name: 'Setup workspace'
+description: 'Setup a yarn project and restore cache if any, given a node version'
+
+inputs:
+  node-version:
+    default: lts/fermium
+    description: 'Node version to use, default to LTS Fermium (14.x)'
+    required: true
+outputs:
+  cache-hit:
+    description: 'Forward actions/cache cache-hit output'
+    value: ${{ steps.node-cache.outputs.cache-hit }}
+  branch:
+    description: 'Current branch'
+    value: ${{ steps.variables.outputs.branch }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Get variables (yarn cache directory, commit hash)
+      id: variables
+      run: |
+        echo "::set-output name=yarncachedir::$(yarn config get cacheFolder)"
+        echo "::set-output name=commitsha::$(echo ${GITHUB_SHA})"
+        echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+
+    - name: Workspace cache (npm, yarn, nx, jest)
+      id: workspace-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.npm
+          ${{ steps.variables.outputs.yarncachedir }}
+          **/node_modules
+          /tmp/nx
+          /tmp/jest_rs
+        key: ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-${{ hashFiles('yarn.lock') }}-sha-${{ steps.variables.outputs.commitsha }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-${{ hashFiles('yarn.lock') }}-sha-
+          ${{ runner.os }}-node-${{ inputs.node-version }}-yarn-
+          ${{ runner.os }}-

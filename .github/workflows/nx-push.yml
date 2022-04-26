@@ -24,50 +24,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: check modified files
-        id: check_files
-        run: |
-          echo "=============== list modified files ==============="
-          git diff --name-only HEAD^ HEAD
-
-          echo "========== check paths of modified files =========="
-          git diff --name-only HEAD^ HEAD > files.txt
-          echo "::set-output name=run_job::false"
-          while IFS= read -r file
-          do
-            echo $file
-            if [[ $file == libs/client/* || $file == apps/platform-e2e/* || $file == libs/backend/* ]]; then
-              echo "Changes on back-end, front-end or qa folders"
-              echo "::set-output name=run_job::true"
-              break
-            fi
-          done < files.txt
-
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v3
+      - name: Setup Yarn and Workspace cache
+        uses: ./.github/actions/setup-workspace
+        id: setup-workspace
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 14
 
-      - name: Get variables (yarn cache directory, commit hash)
-        id: variables
-        run: |
-          echo "::set-output name=yarncachedir::$(yarn config get cacheFolder)"
-          echo "::set-output name=commitsha::$(echo ${GITHUB_SHA})"
-          echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Install dependencies
+        run: yarn install
+        if: steps.setup-workspace.outputs.cache-hit != 'true'
 
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        id: nx-shas
-        uses: nrwl/nx-set-shas@v2
+      - name: Check Nx affected
+        uses: ./.github/actions/check-nx-affected
         with:
-          main-branch-name: ${{ steps.variables.outputs.branch }}
-
-      - name: Get variables (yarn cache directory, commit hash)
-        run: |
-          npm i -g nx
-
-      - name: Check Nx Apps
-        id: check-nx-apps
-        uses: dkhunt27/action-nx-affected-list@v3
-        with:
-          head: ${{ steps.nx-shas.outputs.head }}
-          base: ${{ steps.nx-shas.outputs.base }}
+          branch: ${{ steps.setup-workspace.outputs.branch }}
