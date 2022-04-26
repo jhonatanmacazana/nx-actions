@@ -1,4 +1,7 @@
 {
   "version": 2,
-  "projects": {}
+  "projects": {
+    "web1": "apps/web1",
+    "web1-e2e": "apps/web1-e2e"
+  }
 }
