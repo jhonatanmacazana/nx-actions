@@ -14,22 +14,22 @@ outputs:
     value: ${{ steps.nx-shas.outputs.base }}
   affectedApps:
     description: (Forwarded) Array of affected app names
-    value: ${{  steps.check-nx-affected.outputs.affectedApps }}
+    value: ${{  steps.action-nx-affected.outputs.affectedApps }}
   hasAffectedApps:
     description: (Forwarded) true/false if there are affected apps
-    value: ${{  steps.check-nx-affected.outputs.hasAffectedApps }}
+    value: ${{  steps.action-nx-affected.outputs.hasAffectedApps }}
   affectedLibs:
     description: (Forwarded) Array of affected lib names
-    value: ${{  steps.check-nx-affected.outputs.affectedLibs }}
+    value: ${{  steps.action-nx-affected.outputs.affectedLibs }}
   hasAffectedLibs:
     description: (Forwarded) true/false if there are affected libs
-    value: ${{  steps.check-nx-affected.outputs.hasAffectedLibs }}
+    value: ${{  steps.action-nx-affected.outputs.hasAffectedLibs }}
   affected:
     description: (Forwarded) Array of affected projects (apps/libs) names
-    value: ${{  steps.check-nx-affected.outputs.affected }}
+    value: ${{  steps.action-nx-affected.outputs.affected }}
   hasAffected:
     description: (Forwarded) true/false if there are affected projects (apps/libs)
-    value: ${{  steps.check-nx-affected.outputs.hasAffected }}
+    value: ${{  steps.action-nx-affected.outputs.hasAffected }}
 
 runs:
   using: 'composite'
@@ -41,7 +41,7 @@ runs:
         main-branch-name: ${{ input.branch }}
 
     - name: Check Nx Affected
-      id: check-nx-affected
+      id: action-nx-affected
       uses: dkhunt27/action-nx-affected-list@v3
       with:
         head: ${{ steps.nx-shas.outputs.head }}

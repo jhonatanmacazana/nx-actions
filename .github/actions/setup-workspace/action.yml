@@ -24,6 +24,7 @@ runs:
 
     - name: Get variables (yarn cache directory, commit hash)
       id: variables
+      shell: bash
       run: |
         echo "::set-output name=yarncachedir::$(yarn config get cacheFolder)"
         echo "::set-output name=commitsha::$(echo ${GITHUB_SHA})"
